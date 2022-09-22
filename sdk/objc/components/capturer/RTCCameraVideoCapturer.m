@@ -108,9 +108,9 @@ const int64_t kNanosecondsPerSecond = 1000000000;
 }
 
 - (void)dealloc {
-  NSAssert(
-      !_willBeRunning,
-      @"Session was still running in RTCCameraVideoCapturer dealloc. Forgot to call stopCapture?");
+  // NSAssert(
+  //     !_willBeRunning,
+  //     @"Session was still running in RTCCameraVideoCapturer dealloc. Forgot to call stopCapture?");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -151,62 +151,52 @@ const int64_t kNanosecondsPerSecond = 1000000000;
                         format:(AVCaptureDeviceFormat *)format
                            fps:(NSInteger)fps
              completionHandler:(nullable void (^)(NSError *))completionHandler {
-  _willBeRunning = YES;
-  [RTCDispatcher
-      dispatchAsyncOnType:RTCDispatcherTypeCaptureSession
-                    block:^{
-                      RTCLogInfo("startCaptureWithDevice %@ @ %ld fps", format, (long)fps);
-
+    _willBeRunning = YES;
+    RTCLogInfo(@"startCaptureWithDevice %@ @ %ld fps", format, (long)fps);
+    
 #if TARGET_OS_IPHONE
-                      [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 #endif
-
-                      self.currentDevice = device;
-
-                      NSError *error = nil;
-                      if (![self.currentDevice lockForConfiguration:&error]) {
-                        RTCLogError(@"Failed to lock device %@. Error: %@",
-                                    self.currentDevice,
-                                    error.userInfo);
-                        if (completionHandler) {
-                          completionHandler(error);
-                        }
-                        self.willBeRunning = NO;
-                        return;
-                      }
-                      [self reconfigureCaptureSessionInput];
-                      [self updateOrientation];
-                      [self updateDeviceCaptureFormat:format fps:fps];
-                      [self updateVideoDataOutputPixelFormat:format];
-                      [self.captureSession startRunning];
-                      [self.currentDevice unlockForConfiguration];
-                      self.isRunning = YES;
-                      if (completionHandler) {
-                        completionHandler(nil);
-                      }
-                    }];
+    
+    self.currentDevice = device;
+    
+    NSError *error = nil;
+    if (![self.currentDevice lockForConfiguration:&error]) {
+        RTCLogError(@"Failed to lock device %@. Error: %@",
+                    self.currentDevice,
+                    error.userInfo);
+        if (completionHandler) {
+            completionHandler(error);
+        }
+        self.willBeRunning = NO;
+        return;
+    }
+    [self reconfigureCaptureSessionInput];
+    [self updateOrientation];
+    [self updateDeviceCaptureFormat:format fps:fps];
+    [self updateVideoDataOutputPixelFormat:format];
+    [self.captureSession startRunning];
+    [self.currentDevice unlockForConfiguration];
+    self.isRunning = YES;
+    if (completionHandler) {
+        completionHandler(nil);
+    }
 }
 
 - (void)stopCaptureWithCompletionHandler:(nullable void (^)(void))completionHandler {
-  _willBeRunning = NO;
-  [RTCDispatcher
-      dispatchAsyncOnType:RTCDispatcherTypeCaptureSession
-                    block:^{
-                      RTCLogInfo("Stop");
-                      self.currentDevice = nil;
-                      for (AVCaptureDeviceInput *oldInput in [self.captureSession.inputs copy]) {
-                        [self.captureSession removeInput:oldInput];
-                      }
-                      [self.captureSession stopRunning];
-
+    _willBeRunning = NO;
+    self.currentDevice = nil;
+    for (AVCaptureDeviceInput *oldInput in [self.captureSession.inputs copy]) {
+        [self.captureSession removeInput:oldInput];
+    }
+    [self.captureSession stopRunning];
 #if TARGET_OS_IPHONE
-                      [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 #endif
-                      self.isRunning = NO;
-                      if (completionHandler) {
-                        completionHandler();
-                      }
-                    }];
+    self.isRunning = NO;
+    if (completionHandler) {
+        completionHandler();
+    }
 }
 
 #pragma mark iOS notifications
@@ -467,8 +457,8 @@ const int64_t kNanosecondsPerSecond = 1000000000;
 #pragma mark - Private, called inside capture queue
 
 - (void)updateDeviceCaptureFormat:(AVCaptureDeviceFormat *)format fps:(NSInteger)fps {
-  NSAssert([RTCDispatcher isOnQueueForType:RTCDispatcherTypeCaptureSession],
-           @"updateDeviceCaptureFormat must be called on the capture queue.");
+  // NSAssert([RTCDispatcher isOnQueueForType:RTCDispatcherTypeCaptureSession],
+  //          @"updateDeviceCaptureFormat must be called on the capture queue.");
   @try {
     _currentDevice.activeFormat = format;
     _currentDevice.activeVideoMinFrameDuration = CMTimeMake(1, fps);
@@ -479,8 +469,8 @@ const int64_t kNanosecondsPerSecond = 1000000000;
 }
 
 - (void)reconfigureCaptureSessionInput {
-  NSAssert([RTCDispatcher isOnQueueForType:RTCDispatcherTypeCaptureSession],
-           @"reconfigureCaptureSessionInput must be called on the capture queue.");
+  // NSAssert([RTCDispatcher isOnQueueForType:RTCDispatcherTypeCaptureSession],
+  //          @"reconfigureCaptureSessionInput must be called on the capture queue.");
   NSError *error = nil;
   AVCaptureDeviceInput *input =
       [AVCaptureDeviceInput deviceInputWithDevice:_currentDevice error:&error];
@@ -501,8 +491,8 @@ const int64_t kNanosecondsPerSecond = 1000000000;
 }
 
 - (void)updateOrientation {
-  NSAssert([RTCDispatcher isOnQueueForType:RTCDispatcherTypeCaptureSession],
-           @"updateOrientation must be called on the capture queue.");
+  // NSAssert([RTCDispatcher isOnQueueForType:RTCDispatcherTypeCaptureSession],
+  //          @"updateOrientation must be called on the capture queue.");
 #if TARGET_OS_IPHONE
   _orientation = [UIDevice currentDevice].orientation;
 #endif

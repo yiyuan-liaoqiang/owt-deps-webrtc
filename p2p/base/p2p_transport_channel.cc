@@ -2038,7 +2038,7 @@ void P2PTransportChannel::MaybeStopPortAllocatorSessions() {
     // If gathering continually, keep the last session running so that
     // it can gather candidates if the networks change.
     if (config_.gather_continually() && session == allocator_sessions_.back()) {
-      session->ClearGettingPorts();
+      // session->ClearGettingPorts();
     } else {
       session->StopGettingPorts();
     }

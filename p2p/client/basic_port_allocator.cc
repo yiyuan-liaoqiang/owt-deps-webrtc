@@ -408,6 +408,7 @@ void BasicPortAllocatorSession::StartGettingPorts() {
 
 void BasicPortAllocatorSession::StopGettingPorts() {
   RTC_DCHECK_RUN_ON(network_thread_);
+  RTC_LOG(LS_INFO) << "######BasicPortAllocatorSession::StopGettingPorts";
   ClearGettingPorts();
   // Note: this must be called after ClearGettingPorts because both may set the
   // session state and we should set the state to STOPPED.
@@ -426,6 +427,7 @@ void BasicPortAllocatorSession::ClearGettingPorts() {
 
 bool BasicPortAllocatorSession::IsGettingPorts() {
   RTC_DCHECK_RUN_ON(network_thread_);
+  RTC_LOG(LS_INFO) << "BasicPortAllocatorSession::IsGettingPorts state_ == " << state_;
   return state_ == SessionState::GATHERING;
 }
 
@@ -646,7 +648,8 @@ void BasicPortAllocatorSession::OnMessage(rtc::Message* message) {
       OnAllocationSequenceObjectsCreated();
       break;
     case MSG_CONFIG_STOP:
-      OnConfigStop();
+      RTC_LOG(LS_INFO) << "MSG_CONFIG_STOP == " << MSG_CONFIG_STOP;
+      // OnConfigStop();
       break;
     default:
       RTC_NOTREACHED();
@@ -690,7 +693,7 @@ void BasicPortAllocatorSession::OnConfigReady(PortConfiguration* config) {
 
 void BasicPortAllocatorSession::OnConfigStop() {
   RTC_DCHECK_RUN_ON(network_thread_);
-
+  RTC_LOG(LS_INFO) << "BasicPortAllocatorSession::OnConfigStop";
   // If any of the allocated ports have not completed the candidates allocation,
   // mark those as error. Since session doesn't need any new candidates
   // at this stage of the allocation, it's safe to discard any new candidates.
@@ -983,7 +986,8 @@ void BasicPortAllocatorSession::OnCandidateReady(Port* port,
   if (!data->inprogress()) {
     RTC_LOG(LS_WARNING)
         << "Discarding candidate because port is already done gathering.";
-    return;
+        RTC_LOG(LS_INFO)<< "data->status == " << data->state();
+    // return;
   }
 
   // Mark that the port has a pairable candidate, either because we have a
@@ -1092,9 +1096,9 @@ void BasicPortAllocatorSession::OnPortComplete(Port* port) {
   }
 
   // Moving to COMPLETE state.
-  data->set_state(PortData::STATE_COMPLETE);
+  // data->set_state(PortData::STATE_COMPLETE);
   // Send candidate allocation complete signal if this was the last port.
-  MaybeSignalCandidatesAllocationDone();
+  // MaybeSignalCandidatesAllocationDone();
 }
 
 void BasicPortAllocatorSession::OnPortError(Port* port) {
@@ -1356,6 +1360,7 @@ void AllocationSequence::Start() {
 
 void AllocationSequence::Stop() {
   // If the port is completed, don't set it to stopped.
+  RTC_LOG(LS_INFO) << "AllocationSequence::Stop";
   if (state_ == kRunning) {
     state_ = kStopped;
     session_->network_thread()->Clear(this, MSG_ALLOCATION_PHASE);
@@ -1383,6 +1388,7 @@ void AllocationSequence::OnMessage(rtc::Message* msg) {
       break;
 
     case PHASE_TCP:
+      RTC_LOG(LS_INFO) << "AllocationSequence::OnMessage == " << PHASE_TCP;
       CreateTCPPorts();
       state_ = kCompleted;
       break;
