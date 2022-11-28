@@ -714,7 +714,7 @@ NSUInteger GetMaxSampleRate(const webrtc::H264::ProfileLevelId &profile_level_id
       SetVTSessionProperty(
           _compressionSession, kVTCompressionPropertyKey_ExpectedFrameRate, frameRate);
     }
-
+/*
     // TODO(tkchin): Add a helper method to set array value.
     int64_t dataLimitBytesPerSecondValue =
         static_cast<int64_t>(bitrateBps * kLimitToAverageBitRateFactor / 8);
@@ -739,7 +739,7 @@ NSUInteger GetMaxSampleRate(const webrtc::H264::ProfileLevelId &profile_level_id
     if (status != noErr) {
       RTC_LOG(LS_ERROR) << "Failed to set data rate limit with code: " << status;
     }
-
+*/
     _encoderBitrateBps = bitrateBps;
     _encoderFrameRate = frameRate;
   }

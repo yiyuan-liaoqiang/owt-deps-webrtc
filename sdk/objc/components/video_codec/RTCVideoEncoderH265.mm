@@ -488,7 +488,7 @@ void compressionOutputCallback(void* encoder,
   if (_compressionSession) {
     SetVTSessionProperty(_compressionSession,
                          kVTCompressionPropertyKey_AverageBitRate, bitrateBps);
-
+/*
     // TODO(tkchin): Add a helper method to set array value.
     int64_t dataLimitBytesPerSecondValue =
         static_cast<int64_t>(bitrateBps * kLimitToAverageBitRateFactor / 8);
@@ -516,7 +516,7 @@ void compressionOutputCallback(void* encoder,
     if (status != noErr) {
       RTC_LOG(LS_ERROR) << "Failed to set data rate limit";
     }
-
+*/
     _encoderBitrateBps = bitrateBps;
   }
 }
