@@ -441,6 +441,10 @@ const int64_t kNanosecondsPerSecond = 1000000000;
   _videoDataOutput = videoDataOutput;
 }
 
+- (void)setPreferredOutputPixelFormat:(FourCharCode)code {
+  _preferredOutputPixelFormat = code;
+}
+
 - (void)updateVideoDataOutputPixelFormat:(AVCaptureDeviceFormat *)format {
   FourCharCode mediaSubType = CMFormatDescriptionGetMediaSubType(format.formatDescription);
   if (![[RTCCVPixelBuffer supportedPixelFormats] containsObject:@(mediaSubType)]) {

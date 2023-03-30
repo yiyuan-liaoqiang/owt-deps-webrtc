@@ -65,7 +65,11 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
 }
 
 - (void)capturer:(RTCVideoCapturer *)capturer didCaptureVideoFrame:(RTCVideoFrame *)frame {
-  getObjCVideoSource(_nativeVideoSource)->OnCapturedFrame(frame);
+  RTCVideoFrame *ff = frame;
+  if (self.videoProcessor) {
+      ff = self.videoProcessor(frame);
+  }
+  getObjCVideoSource(_nativeVideoSource)->OnCapturedFrame(ff);
 }
 
 - (void)adaptOutputFormatToWidth:(int)width height:(int)height fps:(int)fps {

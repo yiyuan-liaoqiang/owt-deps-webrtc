@@ -51,7 +51,7 @@ namespace {  // anonymous namespace
 // The ratio between kVTCompressionPropertyKey_DataRateLimits and
 // kVTCompressionPropertyKey_AverageBitRate. The data rate limit is set higher
 // than the average bit rate to avoid undershooting the target.
-const float kLimitToAverageBitRateFactor = 1.5f;
+// const float kLimitToAverageBitRateFactor = 1.5f;
 // These thresholds deviate from the default h265 QP thresholds, as they
 // have been found to work better on devices that support VideoToolbox
 const int kLowh265QpThreshold = 28;

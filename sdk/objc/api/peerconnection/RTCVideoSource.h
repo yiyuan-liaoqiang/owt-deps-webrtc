@@ -32,6 +32,7 @@ RTC_OBJC_EXPORT
  */
 - (void)adaptOutputFormatToWidth:(int)width height:(int)height fps:(int)fps;
 
+@property(nonatomic,strong)RTCVideoFrame*(^videoProcessor)(RTCVideoFrame *frame);
 @end
 
 NS_ASSUME_NONNULL_END
